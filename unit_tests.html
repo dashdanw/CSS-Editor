@@ -1,0 +1,207 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+    <title>QUnit Test Suite</title> 
+	<style type="text/css">
+		#offscreen { position:fixed; top:-10000px; left:-10000px; }
+		@import url (http://github.com/jquery/qunit/raw/master/qunit/qunit.css);
+	</style>
+    <script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>  
+    <!-- Your project files go here -->    
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/impromptu.js"></script>
+	<script type="text/javascript" src="js/contextMenu.js"></script>
+	<script type="text/javascript" src="js/farbtastic.js"></script>
+	<script type="text/javascript" src="js/ColorConverter.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/ChangeEvents.js"></script>
+	<script type="text/javascript" src="js/colorswatch.js"></script>
+	<script type="text/javascript" src="js/tabview.js"></script>
+	<script type="text/javascript" src="js/csseditor.js"></script>
+	<script type="text/javascript" src="js/filebuilder.js"></script>
+  <!-- Your tests file goes here -->  
+    <script type="text/javascript" src="js/csseditor_tests.js"></script>  
+</head>  
+<body>  
+    <h1 id="qunit-header">QUnit Test Suite</h1>  
+    <h2 id="qunit-banner"></h2>  
+    <div id="qunit-testrunner-toolbar"></div>  
+    <h2 id="qunit-userAgent"></h2>  
+    <ol id="qunit-tests"></ol>
+		</br></br></br>
+	<div id="offscreen" class="offscreen">
+		<div class="csseditor" id="csseditor">
+			<div class="editormenu" id="editormenu"><h1>CSS Editor</h1></div>
+			<div class="colorpicker" id="colorpicker">
+				<div class="colorvalues" id="colorvalues">
+					<div class="hue sliderrow" id="hue">
+						<span style="float:left">H </span><div class="hueslider slider" id="hueslider" onclick=""></div>
+						<div class="huenumeric numeric" id="huenumeric"><form><input type="text" id="hueinput" name="hue" size="3" value="0" /></form></div>
+					</div>
+					<div class="saturation sliderrow" id="saturation">
+						<span style="float:left">S</span><div class="satslider slider" id="satslider" onclick=""></div>
+						<div class="satnumeric numeric" id="satnumeric"><form><input type="text" id="satinput" name="sat" size="3" value="0" /></form></div>
+					</div>
+					<div class="value sliderrow" id="value">
+						<span style="float:left">V</span><div class="valslider slider" id="valslider" onclick=""></div>
+						<div class="valnumeric numeric" id="valnumeric"><form><input type="text" id="valinput" name="val" size="3" value="0" /></form></div>
+					</div>
+					<div id="spacer" style="width:1px;height:20px;">&nbsp;</div>
+					<div class="red sliderrow" id="red">
+						<span style="float:left">R</span><div class="redslider slider" id="redslider" onclick=""></div>
+						<div class="rednumeric numeric" id="rednumeric"><form><input type="text" id="redinput" name="red" size="3" value="18" /></form></div>
+					</div>
+					<div class="green sliderrow" id="green">
+						<span style="float:left">G</span><div class="greenslider slider" id="greenslider" onclick=""></div>
+						<div class="greennumeric numeric" id="greennumeric"><form><input type="text" id="greeninput" name="green" size="3" value="52" /></form></div>
+					</div>
+					<div class="blue sliderrow" id="blue">
+						<span style="float:left">B</span><div class="bluesider slider" id="blueslider" onclick=""></div>
+						<div class="bluenumeric numeric" id="bluenumeric"><form><input type="text" id="blueinput" name="blue" size="3" value="86" /></form></div>
+					</div>
+				</div>
+				<div class="currentdisplayed" id="currentdisplayed">
+					<div class="history" id="history">
+						<div class="history1 historytab" id="history1" onclick="updateFromHistory($('#history1'))"></div>
+						<div class="history2 historytab" id="history2" onclick="updateFromHistory($('#history2'))"></div>
+						<div class="history3 historytab" id="history3" onclick="updateFromHistory($('#history3'))"></div>
+						<div class="history4 historytab" id="history4" onclick="updateFromHistory($('#history4'))"></div>
+					</div>
+					<div class="colormatrix" id="colormatrix"></div>
+					<div class="current" id="current"><form><input type="text" id="color" name="color" value="#123456" /></form></div>
+				</div>	
+			</div>				
+			<div id="swatchHolder"> </div>
+			<ul id="tabHolder" class="tabHolder"></ul>
+			<div id="tabDisplay" class="tabDisplay"></div>
+			<div id="alternateTabDisplay" class="alternateTabDisplay"></div>
+			<div class="tabviewer" id="tabviewer">
+				<ul class="tabselect">
+					<!-- The jQuery generated tabs go here -->
+				</ul>
+				<div class="clear"></div>
+				<div id="tabdisplay">
+					<div id="cssoutput" class="tabdisplay cssoutput">
+						<div id="cssoutputContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;">
+
+						</div><div id="downloadbutton"><button id="downloadbutton" onclick="fileBuilder()">Download</button></div></div>
+					<div id="usedcolors" class="tabdisplay usedcolors">
+						<div id="usedcolorsContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;">
+
+						</div>
+					</div>
+					<ul id="usedMenu" class="contextMenu">
+						Set:
+						<li class="updatebgcolor">
+							<a href="#updatebgcolor">BG Color</a>
+						</li>			
+						<li class="updatebordercolor">
+							<a href="#updatebordercolor">Border Color</a>
+						</li>
+						<li class="updatefontcolor">
+							<a href="#updatefontcolor">Text Color</a>
+						</li>
+						<li class="editselectors separator">
+							<a href="#edit">Selectors</a>
+						</li>
+						<li class="unassign separator">
+							<a href="#unassign">Bookmark</a>
+						</li>
+						<li class="reset">
+							<a href="#reset">Reset</a>
+						</li>
+						<li class="delete">
+							<a href="#delete">Delete</a>
+						</li>
+					</ul>
+					<div id="bookmarkcolors" class="tabdisplay bookmarkcolors">
+						<div id="bookmarkcolorsContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;"></div>
+					</div>
+					<ul id="bookmarkMenu" class="contextMenu">
+						Set:
+						<li class="updatebgcolor">
+							<a href="#updatebgcolor">BG Color</a>
+						</li>			
+						<li class="updatebordercolor">
+							<a href="#updatebordercolor">Border Color</a>
+						</li>
+						<li class="updatefontcolor">
+							<a href="#updatefontcolor">Text Color</a>
+						</li>			
+						<li class="assign separator">
+							<a href="#assign">Use Swatch</a>
+						</li>
+						<li class="reset">
+							<a href="#reset">Reset</a>
+						</li>
+						<li class="delete">
+							<a href="#delete">Delete</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="demo-frame">
+			<!DOCTYPE html>
+			<style>
+				div.demo div.draggable { border-style:solid; border-color:black; border-width:2px; width:100px; height:100px; padding:25px; border-width:1px;}
+				div.demo { border-style:solid; border-color:black; border-width:2px; margin-top:-250px; width:1050px; height:500px;}
+				div.demo textarea { display:block; padding:-10px; height:100%; width:100%; left:auto; top:auto; background:transparent; border-color:transparent; margin-left:-2px; margin-top:-2px; resize:none; text-align:center; }
+			</style>
+			<script>
+				var rid = 1;
+
+				function setDemo(holder) {
+					$('.demo').find('#childtext').remove();
+					resetDraggables();
+					var swatches = holder.getSwatches();
+					for(var i=0;i<swatches.length;i++){
+						var newArr = swatches[i].getCSSMapping();
+						if(newArr['selector'] == '' || newArr['selector'] == undefined){continue;} 
+						var selector = newArr['selector'];
+						var bg = 'white'; var font = 'black'; var border = 'black';
+						for(key in newArr['styles']){
+							if(key == 'background-color'){bg = newArr['styles']['background-color'];}
+							if(key == 'border-color'){border = newArr['styles']['border-color'];}
+							if(key == 'color'){font = newArr['styles']['color'];}
+						}
+						var oldID = rid;
+						setupDraggableDiv(selector,bg,font,border);
+					}
+					$('.draggable').draggable({ zIndex: 250, containment: "parent", stack: "div.draggable"}).resizable({ ghost: true });
+					if($('.draggable').length == 0){
+						$('.demo').append('<p id="helptext">There are currently no swatches to demo. To test color arrangements, create some swatches for use and select the "Update Demo" button above.</p>');
+					}		
+				}
+				
+				function resetDraggables() {
+					rid = 1;
+					$('.demo').find('#helptext').remove();
+					$('.demo').find('.draggable').remove();
+				}
+				
+				function setupDraggableDiv(name,bg,font,border){
+					var curr = document.createElement("div");
+					var id = 'previewdiv' + rid++;
+					curr.setAttribute('id',id);
+					curr.setAttribute('class','draggable');
+					curr.setAttribute('style','z-index:0; position:absolute; border-color:' + border + '; color:' + font + '; background-color:' + bg + ';');
+					curr.innerHTML = '<textarea id="childtext" style="color:' + font + ';">Sample Text</textarea><textarea readonly="readonly" style="color:black; height:20px; padding-top:30px; pointer-events:none;">'+name+'</textarea>';
+					$('.demo').append(curr);
+				}
+			</script>
+			<div id="demo" class="demo">
+				<div style="position:relative; margin-left:50%; margin-right:50%;" class="demobutton button" id="demobutton"><button type="button">Update Demo</button></div>
+				<p id="helptext">There are currently no swatches to demo. To test color arrangements, create some swatches for use and select the "Update Demo" button above.</p>
+			</div>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	var rgbInput = [$('#redinput'),$('#greeninput'),$('#blueinput')];
+	var rgbSlider = [$('#redslider'),$('#greenslider'),$('#blueslider')];
+	var hsvInput = [$('#hueinput'),$('#satinput'),$('#valinput')];
+	var hsvSlider = [$('#hueslider'),$('#satslider'),$('#valslider')];
+	var hexInput = $('#color');
+</script>  
+</html>  

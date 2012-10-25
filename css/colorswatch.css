@@ -1,0 +1,6 @@
+.swatch.inactive{border-width:1px; padding:2px;}
+.swatch {text-align:center; border-style:solid; float:left; margin: 4px 5px 6px 5px; width: 29%; height:62px;}
+.swatch.active{border-width:3px; padding:0px;}
+
+/* Tab graphics change when hovered over; this uses CSS modifiers to render the bottom half of the master graphic instead.*/
+.swatch:hover{border-width:3px; border-style:double; padding:0px;}

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>CSS Editor</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<!-- Load each child element's CSS -->
+<link rel="stylesheet" href="css/farbtastic.css" type="text/css" />
+<link rel="stylesheet" href="css/tabview.css" type="text/css" />
+<link rel="stylesheet" href="css/colorswatch.css" type="text/css" />
+<link rel="stylesheet" href="css/contextMenu.css" type="text/css" />
+<link rel="stylesheet" href="css/impromptu.css" type="text/css" />
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.1/themes/base/jquery-ui.css"/>
+
+<!-- Load each corresponding Javascript file -->
+<!-- External Scripts -->
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/impromptu.js"></script>
+<script type="text/javascript" src="js/contextMenu.js"></script>
+<script type="text/javascript" src="js/farbtastic.js"></script>
+<script type="text/javascript" src="js/ColorConverter.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7.2/jquery-ui.js"></script>
+
+<!-- Custom Scripts -->
+<script type="text/javascript" src="js/ChangeEvents.js"></script>
+<script type="text/javascript" src="js/colorswatch.js"></script>
+<script type="text/javascript" src="js/tabview.js"></script>
+<script type="text/javascript" src="js/swatchHolders.js"></script>
+<script type="text/javascript" src="js/filebuilder.js"></script>
+<script>
+	$(document).ready(function() {
+		//Create the display tabs
+		addTab('ul.tabselect','Bookmarked Colors','bookmarkcolors');
+		addTab('ul.tabselect','Colors Used in the Site','usedcolors');
+		addTab('ul.tabselect','CSS Output','cssoutput');
+
+		var bookmarkHolder = new swatchHolder('#bookmarkcolorsContents','bookmarkswatch');
+		var usedcolorsHolder = new swatchHolder('#usedcolorsContents','usedcolorswatch');
+		updateBookmarks(bookmarkHolder,usedcolorsHolder);
+		updateUseds(usedcolorsHolder,bookmarkHolder);
+		$('#bookmarkcolorsContents').mousedown( function() {
+			bookmarkHolder.addSwatch('swatch' + (uid++),'transparent');
+			updateBookmarks(bookmarkHolder,usedcolorsHolder);
+			}
+		);
+		
+		$('#usedcolorsContents').mousedown( function() {
+			var oldid = 'swatch' + uid;
+			usedcolorsHolder.addSwatch('swatch' + (uid++),'transparent');
+			var swatch = usedcolorsHolder.getSwatch(oldid);
+			if(swatch != null) {swatch.setSelectorNeed(true); swatch.selectorNotification(false);}
+			updateUseds(usedcolorsHolder,bookmarkHolder);
+			}
+		);
+		
+		//instantiate farbtastic colormatrix
+     	$('#colormatrix').farbtastic('#color');
+
+
+		//instantiate the sliders from jqueryui
+  		$('#hueslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 360,
+			value: 12,
+		});
+		$('#satslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 100,
+			value: 12,
+		});
+		$('#valslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 100,
+			value: 12,
+		});
+		$('#redslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 255,
+			value: 12,
+		});
+		$('#greenslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 255,
+			value: 34,
+		});
+		$('#blueslider').slider({
+			orientation: "horizontal",
+			range: "min",
+			max: 255,
+			value: 56,
+		});
+
+		//slider action handler
+		$('#hueslider').mousedown(function() {
+			$('#hueinput').val($('#hueslider').slider('value'));
+			updateFromHsv();
+  			$(document).mousemove(function() {
+				$('#hueinput').val($('#hueslider').slider('value'));
+				updateFromHsv();
+  			});
+		});
+		$('#satslider').mousedown(function() {
+			$('#satinput').val($('#satslider').slider('value'));
+			updateFromHsv();
+  			$(document).mousemove(function() {
+				$('#satinput').val($('#satslider').slider('value'));
+				updateFromHsv();
+  			});
+		});
+		$('#valslider').mousedown(function() {
+			$('#valinput').val($('#valslider').slider('value'));
+			updateFromHsv();
+	  		$(document).mousemove(function() {
+				$('#valinput').val($('#valslider').slider('value'));
+				updateFromHsv();
+  			});
+		});
+		$('#redslider').mousedown(function() {
+			$('#redinput').val($('#redslider').slider('value'));
+			updateFromRgb();
+  			$(document).mousemove(function() {
+				$('#redinput').val($('#redslider').slider('value'));
+				updateFromRgb();
+  			});
+		});
+		$('#greenslider').mousedown(function() {
+			$('#greeninput').val($('#greenslider').slider('value'));
+			updateFromRgb();
+  			$(document).mousemove(function() {
+				$('#greeninput').val($('#greenslider').slider('value'));
+				updateFromRgb();
+  			});
+		});
+		$('#blueslider').mousedown(function() {
+			$('#blueinput').val($('#blueslider').slider('value'));
+			updateFromRgb();
+  			$(document).mousemove(function() {
+				$('#blueinput').val($('#blueslider').slider('value'));
+				updateFromRgb();
+  			});
+		});
+
+		//RGB value change events
+		$('#hueinput').keydown(function() {
+			$('#hueslider').slider('value',$('#hueinput').val());
+			updateFromHsv();
+		});
+		$('#hueinput').keyup(function() {
+			$('#hueslider').slider('value',$('#hueinput').val());
+			updateFromHsv();
+		});
+		$('#satinput').keydown(function() {
+			$('#satslider').slider('value',$('#satinput').val());
+			updateFromHsv();
+		});
+		$('#satinput').keyup(function() {
+			$('#satslider').slider('value',$('#satinput').val());
+			updateFromHsv();
+		});
+		$('#valinput').keydown(function() {
+			$('#valslider').slider('value',$('#valinput').val());
+			updateFromHsv();
+		});
+		$('#valinput').keyup(function() {
+			$('#valslider').slider('value',$('#valinput').val());
+			updateFromHsv();
+		});
+		$('#redinput').keydown(function() {
+			$('#redslider').slider('value',$('#redinput').val());
+			updateFromRgb();
+		});
+		$('#redinput').keyup(function() {
+			$('#redslider').slider('value',$('#redinput').val());
+			updateFromRgb();
+		});
+		$('#greeninput').keydown(function() {
+			$('#greenslider').slider('value',$('#greeninput').val());
+			updateFromRgb();
+		});
+		$('#greeninput').keyup(function() {
+			$('#greenslider').slider('value',$('#greeninput').val());
+			updateFromRgb();
+		});
+		$('#blueinput').keydown(function() {
+			$('#blueslider').slider('value',$('#blueinput').val());
+			updateFromRgb();
+		});
+		$('#blueinput').keyup(function() {
+			$('#blueslider').slider('value',$('#blueinput').val());
+			updateFromRgb();
+		});
+
+		//update from hex field
+		$('#color').keydown(function() {
+			updateFromHex($('#color').val());
+		});
+		$('#color').keyup(function() {
+			updateFromHex($('#color').val());
+		});
+		
+		//update from hexwheel
+     	$('.marker').mousemove(function() {
+     			updateFromHex($.farbtastic('#colormatrix').color);
+     	});
+     	$('.marker,.overlay,.color,.wheel,.farbtastic').mousedown(function () {
+	     	historyCycle($('#color').val());
+     	});
+     	
+     	//cycle the history
+     	$('#hueslider,#satslider,#valslider,#redslider,#greenslider,#blueslider').mousedown(function() {
+     		historyCycle($('#color').val());
+     	});
+     	$('#hueinput,#satinput,#valinput,#redinput,#greeninput,#blueinput,#color').change(function() {
+     		historyCycle($('#color').val());
+     	});
+	});
+</script>
+</head>
+<body>
+<div class="csseditor" id="csseditor">
+<<<<<<< HEAD
+	<div class="editormenu" id="editormenu">
+	<h1>
+		Menu bar will go here
+	</h1>
+</div>
+=======
+	<div class="editormenu" id="editormenu"><h1>CSS Editor</h1></div>
+>>>>>>> 82f1987b21aac76ce68ed844e406837d7fc8648c
+	<div class="colorpicker" id="colorpicker">
+		<div class="colorvalues" id="colorvalues">
+			<div class="hue sliderrow" id="hue">
+				<span style="float:left">H </span><div class="hueslider slider" id="hueslider" onclick=""></div>
+				<div class="huenumeric numeric" id="huenumeric"><form><input type="text" id="hueinput" name="hue" size="3" value="0" /></form></div>
+			</div>
+			<div class="saturation sliderrow" id="saturation">
+				<span style="float:left">S</span><div class="satslider slider" id="satslider" onclick=""></div>
+				<div class="satnumeric numeric" id="satnumeric"><form><input type="text" id="satinput" name="sat" size="3" value="0" /></form></div>
+			</div>
+			<div class="value sliderrow" id="value">
+				<span style="float:left">V</span><div class="valslider slider" id="valslider" onclick=""></div>
+				<div class="valnumeric numeric" id="valnumeric"><form><input type="text" id="valinput" name="val" size="3" value="0" /></form></div>
+			</div>
+			<div id="spacer" style="width:1px;height:20px;">&nbsp;</div>
+			<div class="red sliderrow" id="red">
+				<span style="float:left">R</span><div class="redslider slider" id="redslider" onclick=""></div>
+				<div class="rednumeric numeric" id="rednumeric"><form><input type="text" id="redinput" name="red" size="3" value="18" /></form></div>
+			</div>
+			<div class="green sliderrow" id="green">
+				<span style="float:left">G</span><div class="greenslider slider" id="greenslider" onclick=""></div>
+				<div class="greennumeric numeric" id="greennumeric"><form><input type="text" id="greeninput" name="green" size="3" value="52" /></form></div>
+			</div>
+			<div class="blue sliderrow" id="blue">
+				<span style="float:left">B</span><div class="bluesider slider" id="blueslider" onclick=""></div>
+				<div class="bluenumeric numeric" id="bluenumeric"><form><input type="text" id="blueinput" name="blue" size="3" value="86" /></form></div>
+			</div>
+		</div>
+		<div class="currentdisplayed" id="currentdisplayed">
+			<div class="history" id="history">
+				<div class="history1 historytab" id="history1" onclick="updateFromHistory($('#history1'))"></div>
+				<div class="history2 historytab" id="history2" onclick="updateFromHistory($('#history2'))"></div>
+				<div class="history3 historytab" id="history3" onclick="updateFromHistory($('#history3'))"></div>
+				<div class="history4 historytab" id="history4" onclick="updateFromHistory($('#history4'))"></div>
+			</div>
+			<div class="colormatrix" id="colormatrix"></div>
+			<div class="current" id="current"><form><input type="text" id="color" name="color" value="#123456" /></form></div>
+<<<<<<< HEAD
+=======
+			<div class="bookmarkbutton button" id="bookmarkbutton"><button type="button">Bookmark Color</button> </div><div class="demobutton button" id="demobutton"><button type="button" onclick="makeDraggableDiv($('#color').val());">Add To Demo Area</button></div> 
+>>>>>>> 82f1987b21aac76ce68ed844e406837d7fc8648c
+		</div>	
+	</div>
+	<div class="tabviewer" id="tabviewer">
+		<ul class="tabselect">
+			<!-- The jQuery generated tabs go here -->
+		</ul>
+		<div class="clear"></div>
+		<div id="tabdisplay">
+			<div id="cssoutput" class="tabdisplay cssoutput">
+				<div id="cssoutputContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;">
+
+				</div><div id="downloadbutton"><button id="downloadbutton" onclick="fileBuilder()">Download</button></div></div>
+			<div id="usedcolors" class="tabdisplay usedcolors">
+				<div id="usedcolorsContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;">
+
+				</div>
+			</div>
+			<ul id="usedMenu" class="contextMenu">
+				Set:
+				<li class="updatebgcolor">
+					<a href="#updatebgcolor">BG Color</a>
+				</li>			
+				<li class="updatebordercolor">
+					<a href="#updatebordercolor">Border Color</a>
+				</li>
+				<li class="updatefontcolor">
+					<a href="#updatefontcolor">Text Color</a>
+				</li>
+				<li class="editselectors separator">
+					<a href="#edit">Selectors</a>
+				</li>
+				<li class="unassign separator">
+					<a href="#unassign">Bookmark</a>
+				</li>
+				<li class="reset">
+					<a href="#reset">Reset</a>
+				</li>
+				<li class="delete">
+					<a href="#delete">Delete</a>
+				</li>
+			</ul>
+			<div id="bookmarkcolors" class="tabdisplay bookmarkcolors">
+				<div id="bookmarkcolorsContents" style="border-style:solid;border-width:1px;border-color:#000000;padding:3px;background:white;height:260px;min-width:390px;margin-right:10px;margin-right:15px;width:auto;font:16px/26px Georgia, Garamond, Serif;overflow-y:scroll;"></div>
+			</div>
+			<ul id="bookmarkMenu" class="contextMenu">
+				Set:
+				<li class="updatebgcolor">
+					<a href="#updatebgcolor">BG Color</a>
+				</li>			
+				<li class="updatebordercolor">
+					<a href="#updatebordercolor">Border Color</a>
+				</li>
+				<li class="updatefontcolor">
+					<a href="#updatefontcolor">Text Color</a>
+				</li>			
+				<li class="assign separator">
+					<a href="#assign">Use Swatch</a>
+				</li>
+				<li class="reset">
+					<a href="#reset">Reset</a>
+				</li>
+				<li class="delete">
+					<a href="#delete">Delete</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<div id="demo-frame">
+<!DOCTYPE html>
+<style>
+	div.demo div.draggable { border-style:solid; border-color:black; width: 150px; height: 150px; padding: 0.5em; border-width:1px;}
+	div.demo { border-style:solid; border-color:black; margin-top:-250px; width:1050px; height:500px;}
+</style>
+<script>
+	function makeDraggableDiv(hex){
+		var curr = document.createElement("div");
+		var id = Math.floor(Math.random()*1000000000);
+		curr.setAttribute('id',id);
+		curr.setAttribute('class','draggable');
+		curr.setAttribute('style','background-color:' + hex + ";zindex:3;");
+
+		curr.innerHTML = hex;
+		$('.demo').append(curr);
+		$(curr).resizable().draggable({ containment: "parent" });
+	}
+</script>
+<div id="demo" class="demo">
+
+</div>
+<script type="text/javascript">
+var rgbInput = [$('#redinput'),$('#greeninput'),$('#blueinput')];
+var rgbSlider = [$('#redslider'),$('#greenslider'),$('#blueslider')];
+var hsvInput = [$('#hueinput'),$('#satinput'),$('#valinput')];
+var hsvSlider = [$('#hueslider'),$('#satslider'),$('#valslider')];
+var hexInput = $('#color');
+</script>
+</body>
+</html>

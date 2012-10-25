@@ -1,0 +1,86 @@
+/* The box that holds the tab contents. */
+#tabdisplay{
+	background-color:#EEEEEE;
+	border:2px solid #0E0E0E;
+	height:300px;
+	margin:0px 10px 10px 10px;	
+	color:#444444;
+	padding:15px;
+}
+/* The individual tab contents, formatted for the stacked display. */
+div.tabdisplay{
+	background-color:#EEEEEE;
+	position:absolute;
+	width:auto;
+	height:auto;
+}
+
+/*Space to format the specific tabs later. */
+div#cssoutput{}
+div#usedcolors{}
+div#bookmarkcolors{}
+
+/* Format the tabs. They operate as a list of links, so they're displayed as a series of floating inline blocks. */
+.tabselect{	float:right; padding-right:25px;}
+.tabselect li{ display:inline;}
+.tabselect li a,.tabselect li a:visited{
+	float:left;
+	font-size:12px;
+	display:block;
+	padding:2px 6px 4px;
+	margin:0px 4px;
+	height:17px;
+	position:relative;
+}
+
+/* Style the box holding tab contents. In this case it's shifted up slightly to meet the tab graphics. */
+#tabdisplay{
+	top: -18px;
+	margin:0px 5px;
+	position:relative;
+	width:auto;
+}
+
+
+/* Style the tab element left and right sides. This is formatted to fit the tab images used. */
+ul .tabimg.left{
+	height:23px;
+	position:absolute;
+	top:0;
+	width:18px;
+	left:-16px;
+}
+
+ul .tabimg.right{
+	height:23px;
+	position:absolute;
+	top:0;
+	width:18px;
+	right:-16px;
+}
+
+/*	Load tab graphics. They rely on CSS image parsing to have multiple states in one image.
+	Each image has three parts; a left side, a repeated middle section to stretch, and a right edge.
+	For display purposes, active tabs and hovered tabs appear to be on top of other tabs by manipulating the index.
+*/
+ul a.tab.inactive{ background:url(../img/tabview/inactive_mid.png) repeat-x top center;	color:#eeeeee; z-index:2;}
+ul a.tab.inactive span.tabimg.left{ background:url(../img/tabview/inactive_left.png) no-repeat left top; z-index:2;}
+ul a.tab.inactive span.tabimg.right{ background:url(../img/tabview/inactive_right.png) no-repeat right top; z-index:2;}
+
+ul a.tab.active{ background:url(../img/tabview/active_mid.png) repeat-x top center;	color:#555555; z-index:3;}
+ul a.tab.active span.tabimg.left{ background:url(../img/tabview/active_left.png) no-repeat left top; z-index:3;}
+ul a.tab.active span.tabimg.right{ background:url(../img/tabview/active_right.png) no-repeat right top; z-index:3;}
+
+/* Tab graphics change when hovered over; this uses CSS modifiers to render the bottom half of the master graphic instead.*/
+ul a.tab:hover{background-position:bottom center; text-decoration:none; z-index:4;}
+ul a.tab:hover span.tabimg.left{ background-position:left bottom; z-index:4;}
+ul a.tab:hover span.tabimg.right{ background-position:right bottom; z-index:4;}
+
+/*Resets float behavior 'clearing' a new line without floats. Good for ending a float line. Arguably an ugly hack.*/
+.clear{ clear:both; height:0px; overflow:hidden;}
+
+/*Remove standard URL decorations*/
+a.tab, a.tab:visited , a.tab:hover{
+	text-decoration:none;
+	outline:none;
+}
